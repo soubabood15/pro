@@ -41,9 +41,9 @@
   </div>
 
   <br>
-  <input type="number" id="number" placeholder="أدخل الرقم" oninput="calculate()">
+  <input type="number" id="number" placeholder="سعر الصنف او الوجبة" oninput="calculate()">
 
-  <div id="result">اختر نوع الحساب وأدخل رقم</div>
+  <div id="result"> اختر نوع الوجبة وسعرها</div>
 
   <script>
     let factor = null;
@@ -52,7 +52,7 @@
     function setFactor(value, text) {
       factor = value;
       label = text;
-      calculate(); // إذا فيه رقم مدخل يحسب على طول
+      calculate();
     }
 
     function calculate() {
