@@ -28,14 +28,12 @@
       color: darkblue;
       font-size: 20px;
     }
+    .footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: gray;
+    }
   </style>
-  <style>
-  .footer {
-    margin-top: 40px;
-    font-size: 14px;
-    color: gray;
-  }
-</style>
 </head>
 <body>
   <h2>احسب القيمة هنا</h2>
@@ -48,12 +46,13 @@
   </div>
 
   <br>
-  <input type="number" id="number" placeholder="سعر الصنف او الوجبة" oninput="calculate()">
+  <input type="text" id="number" placeholder="سعر الصنف او الوجبة" oninput="calculate()">
 
   <div id="result"> اختر نوع الوجبة وسعرها</div>
   <div class="footer">
     Made by : Abdelrahman & Reem
   </div>
+
   <script>
     let factor = null;
     let label = "";
@@ -65,7 +64,15 @@
     }
 
     function calculate() {
-      let value = parseFloat(document.getElementById("number").value);
+      let input = document.getElementById("number").value;
+
+      
+      if (isNaN(input) || input.trim() === "") {
+        document.getElementById("result").innerText = "⚠️ الرجاء إدخال أرقام فقط";
+        return;
+      }
+
+      let value = parseFloat(input);
       if (factor !== null && !isNaN(value)) {
         document.getElementById("result").innerText = 
           `النتيجة لـ ${label}: ${(value * factor).toFixed(2)}`;
