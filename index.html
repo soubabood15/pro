@@ -10,16 +10,17 @@
       text-align: center;
       margin: 40px;
     }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
     input {
       width: 200px;
       padding: 10px;
+      margin-top: 20px;
       font-size: 16px;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 16px;
-      cursor: pointer;
     }
     #result {
       margin-top: 20px;
@@ -32,21 +33,35 @@
 <body>
   <h2>حاسبة النسب</h2>
 
-  <input type="number" id="number" placeholder="أدخل الرقم">
-  <br><br>
+  <div>
+    <button onclick="setFactor(0.8,'Main dish')">Main dish (80%)</button>
+    <button onclick="setFactor(0.5,'Side dish')">Side dish (50%)</button>
+    <button onclick="setFactor(0.3,'Drink')">Drink (30%)</button>
+    <button onclick="setFactor(0.1,'Cutlery')">Cutlery (10%)</button>
+  </div>
 
-  <button onclick="calc(0.8)">Main dish (80%)</button>
-  <button onclick="calc(0.5)">Side dish (50%)</button>
-  <button onclick="calc(0.3)">Drink (30%)</button>
-  <button onclick="calc(0.1)">Cutlery (10%)</button>
+  <br>
+  <input type="number" id="number" placeholder="أدخل الرقم" oninput="calculate()">
 
-  <div id="result">---</div>
+  <div id="result">اختر نوع الحساب وأدخل رقم</div>
 
   <script>
-    function calc(factor) {
+    let factor = null;
+    let label = "";
+
+    function setFactor(value, text) {
+      factor = value;
+      label = text;
+      calculate(); // إذا فيه رقم مدخل يحسب على طول
+    }
+
+    function calculate() {
       let value = parseFloat(document.getElementById("number").value);
-      if (!isNaN(value)) {
-        document.getElementById("result").innerText = (value * factor).toFixed(2);
+      if (factor !== null && !isNaN(value)) {
+        document.getElementById("result").innerText = 
+          `النتيجة لـ ${label}: ${(value * factor).toFixed(2)}`;
+      } else if (factor === null) {
+        document.getElementById("result").innerText = "اختر نوع الحساب أولاً";
       } else {
         document.getElementById("result").innerText = "أدخل رقم صحيح";
       }
