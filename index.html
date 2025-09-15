@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>حاسبة بسيطة</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+      text-align: center;
+      margin: 50px;
+    }
+    select, input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    #result {
+      font-weight: bold;
+      color: darkblue;
+    }
+  </style>
+</head>
+<body>
+  <h2>حاسبة النِسَب</h2>
+
+  <label for="item">اختر العنصر:</label>
+  <select id="item">
+    <option value="0.8">Main dish (80%)</option>
+    <option value="0.5">Side dish (50%)</option>
+    <option value="0.3">Drink (30%)</option>
+    <option value="0.1">Cutlery (10%)</option>
+  </select>
+  <br><br>
+
+  <label for="number">أدخل الرقم:</label>
+  <input type="number" id="number" placeholder="مثال: 100" />
+  <br><br>
+
+  <button onclick="calculate()">احسب</button>
+  <h3>النتيجة: <span id="result">---</span></h3>
+
+  <script>
+    function calculate() {
+      let value = parseFloat(document.getElementById("number").value);
+      let factor = parseFloat(document.getElementById("item").value);
+      if (!isNaN(value)) {
+        document.getElementById("result").innerText = (value * factor).toFixed(2);
+      } else {
+        document.getElementById("result").innerText = "أدخل رقم صحيح";
+      }
+    }
+  </script>
+</body>
+</html>
