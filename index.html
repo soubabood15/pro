@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>حاسبة النسب</title>
+  <title>حساب قيمة التعويض</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -31,13 +31,13 @@
   </style>
 </head>
 <body>
-  <h2>حاسبة النسب</h2>
+  <h2>احسب القيمة هنا</h2>
 
   <div>
-    <button onclick="setFactor(0.8,'Main dish')">Main dish (80%)</button>
-    <button onclick="setFactor(0.5,'Side dish')">Side dish (50%)</button>
-    <button onclick="setFactor(0.3,'Drink')">Drink (30%)</button>
-    <button onclick="setFactor(0.1,'Cutlery')">Cutlery (10%)</button>
+    <button onclick="setFactor(0.8,'Main dish')">Main dish </button>
+    <button onclick="setFactor(0.5,'Side dish')">Side dish </button>
+    <button onclick="setFactor(0.3,'Drink')">Drink </button>
+    <button onclick="setFactor(0.1,'Cutlery')">Cutlery </button>
   </div>
 
   <br>
@@ -63,7 +63,7 @@
       } else if (factor === null) {
         document.getElementById("result").innerText = "اختر نوع الحساب أولاً";
       } else {
-        document.getElementById("result").innerText = "أدخل رقم صحيح";
+        document.getElementById("result").innerText = "لاتترك الحقل فارغ";
       }
     }
   </script>
