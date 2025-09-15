@@ -3,6 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>حساب قيمة التعويض</title>
+
+  <!-- Google Tag Manager -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-KHD8G7B4');
+  </script>
+  <!-- End Google Tag Manager -->
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -36,6 +47,14 @@
   </style>
 </head>
 <body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KHD8G7B4"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
   <h2>احسب القيمة هنا</h2>
 
   <div>
@@ -66,7 +85,6 @@
     function calculate() {
       let input = document.getElementById("number").value;
 
-      
       if (input.trim() === "") {
         if (factor !== null) {
           document.getElementById("result").innerText = "⚠️ الرجاء إدخال قيمة قبل الحساب";
@@ -76,13 +94,11 @@
         return;
       }
 
-    
       if (isNaN(input)) {
         document.getElementById("result").innerText = "⚠️ الرجاء إدخال أرقام فقط";
         return;
       }
 
- 
       let value = parseFloat(input);
       if (factor !== null) {
         document.getElementById("result").innerText = 
