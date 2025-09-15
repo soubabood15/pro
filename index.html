@@ -66,7 +66,7 @@
     function calculate() {
       let input = document.getElementById("number").value;
 
-      // ✅ إذا فارغ
+      
       if (input.trim() === "") {
         if (factor !== null) {
           document.getElementById("result").innerText = "⚠️ الرجاء إدخال قيمة قبل الحساب";
@@ -76,13 +76,13 @@
         return;
       }
 
-      // ✅ إذا مو رقم
+    
       if (isNaN(input)) {
         document.getElementById("result").innerText = "⚠️ الرجاء إدخال أرقام فقط";
         return;
       }
 
-      // ✅ إذا كل شي صحيح
+ 
       let value = parseFloat(input);
       if (factor !== null) {
         document.getElementById("result").innerText = 
