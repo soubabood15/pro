@@ -66,20 +66,29 @@
     function calculate() {
       let input = document.getElementById("number").value;
 
-      
-      if (isNaN(input) || input.trim() === "") {
+      // ✅ إذا فارغ
+      if (input.trim() === "") {
+        if (factor !== null) {
+          document.getElementById("result").innerText = "⚠️ الرجاء إدخال قيمة قبل الحساب";
+        } else {
+          document.getElementById("result").innerText = "اختر نوع الحساب أولاً";
+        }
+        return;
+      }
+
+      // ✅ إذا مو رقم
+      if (isNaN(input)) {
         document.getElementById("result").innerText = "⚠️ الرجاء إدخال أرقام فقط";
         return;
       }
 
+      // ✅ إذا كل شي صحيح
       let value = parseFloat(input);
-      if (factor !== null && !isNaN(value)) {
+      if (factor !== null) {
         document.getElementById("result").innerText = 
           `النتيجة لـ ${label}: ${(value * factor).toFixed(2)}`;
-      } else if (factor === null) {
-        document.getElementById("result").innerText = "اختر نوع الحساب أولاً";
       } else {
-        document.getElementById("result").innerText = "لاتترك الحقل فارغ";
+        document.getElementById("result").innerText = "اختر نوع الحساب أولاً";
       }
     }
   </script>
