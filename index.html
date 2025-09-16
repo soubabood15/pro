@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>نظام دخول + حاسبة</title>
+  <title>حساب قيمة التعويض</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -10,9 +10,16 @@
       text-align: center;
       margin: 40px;
     }
-    input, button {
-      padding: 10px;
+    button {
+      padding: 10px 20px;
       margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    input {
+      width: 200px;
+      padding: 10px;
+      margin-top: 20px;
       font-size: 16px;
     }
     #result {
@@ -26,94 +33,37 @@
       font-size: 14px;
       color: gray;
     }
-    #calculator {
-      display: none; /* مخفي لحد ما يسجل المستخدم دخول */
-    }
   </style>
 </head>
 <body>
-  <h2>تسجيل دخول الموظفين</h2>
-  <input type="email" id="email" placeholder="البريد"><br>
-  <input type="password" id="password" placeholder="كلمة السر"><br>
-  <button onclick="login()">دخول</button>
-  <p id="status"></p>
+  <h2>احسب القيمة هنا</h2>
 
-  <!-- الحاسبة -->
-  <div id="calculator">
-    <h2>احسب القيمة هنا</h2>
-    <div>
-      <button onclick="setFactor(0.8,'Main dish')">Main dish</button>
-      <button onclick="setFactor(0.5,'Side dish')">Side dish</button>
-      <button onclick="setFactor(0.3,'Drink')">Drink</button>
-      <button onclick="setFactor(0.1,'Cutlery')">Cutlery</button>
-    </div>
-    <br>
-    <input type="text" id="number" placeholder="سعر الصنف او الوجبة" oninput="calculate()">
-    <div id="result">اختر نوع الوجبة وسعرها</div>
-    <button onclick="logout()">🚪 تسجيل خروج</button>
-    <div class="footer">
-      Made by : Abdelrahman & Reem
-    </div>
+  <div>
+    <button onclick="setFactor(0.8,'Main dish')">Main dish </button>
+    <button onclick="setFactor(0.5,'Side dish')">Side dish </button>
+    <button onclick="setFactor(0.3,'Drink')">Drink </button>
+    <button onclick="setFactor(0.1,'Cutlery')">Cutlery </button>
   </div>
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+  <br>
+  <input type="text" id="number" placeholder="سعر الصنف او الوجبة" oninput="calculate()">
 
-    // 🔹 بيانات مشروعك من Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyD3AwdpoLUNCyGYxJ6W_KVikLIbeiBDdgk",
-      authDomain: "cs-test-8f427.firebaseapp.com",
-      projectId: "cs-test-8f427",
-      storageBucket: "cs-test-8f427.firebasestorage.app",
-      messagingSenderId: "887748977093",
-      appId: "1:887748977093:web:1ff113280f7335dbb32bac",
-      measurementId: "G-2MJGMW9GHG"
-    };
+  <div id="result"> اختر نوع الوجبة وسعرها</div>
+  <div class="footer">
+    Made by : Abdelrahman & Reem
+  </div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    // التحقق من حالة تسجيل الدخول
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.querySelector("h2").innerText = "✅ مرحبًا " + user.email;
-        document.getElementById("calculator").style.display = "block";
-      } else {
-        document.getElementById("calculator").style.display = "none";
-      }
-    });
-
-    // تسجيل الدخول
-    window.login = function() {
-      const email = document.getElementById("email").value;
-      const pass = document.getElementById("password").value;
-      signInWithEmailAndPassword(auth, email, pass)
-        .then(() => {
-          document.getElementById("status").innerText = "";
-        })
-        .catch((error) => {
-          document.getElementById("status").innerText = "❌ خطأ: " + error.message;
-        });
-    }
-
-    // تسجيل الخروج
-    window.logout = function() {
-      signOut(auth);
-    }
-
-    // كود الحاسبة
+  <script>
     let factor = null;
     let label = "";
 
-    window.setFactor = function(value, text) {
+    function setFactor(value, text) {
       factor = value;
       label = text;
       calculate();
     }
 
-    window.calculate = function() {
+    function calculate() {
       let input = document.getElementById("number").value;
 
       if (input.trim() === "") {
@@ -132,7 +82,7 @@
 
       let value = parseFloat(input);
       if (factor !== null) {
-        document.getElementById("result").innerText =
+        document.getElementById("result").innerText = 
           `النتيجة لـ ${label}: ${(value * factor).toFixed(2)}`;
       } else {
         document.getElementById("result").innerText = "اختر نوع الحساب أولاً";
