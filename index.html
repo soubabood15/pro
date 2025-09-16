@@ -2,19 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>حساب قيمة التعويض</title>
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-04NSMVG6EM"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-04NSMVG6EM');
-  </script>
-  <!-- End Google tag -->
-
+  <title>نظام دخول + حاسبة</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -22,16 +10,9 @@
       text-align: center;
       margin: 40px;
     }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    input {
-      width: 200px;
+    input, button {
       padding: 10px;
-      margin-top: 20px;
+      margin: 5px;
       font-size: 16px;
     }
     #result {
@@ -45,37 +26,94 @@
       font-size: 14px;
       color: gray;
     }
+    #calculator {
+      display: none; /* مخفي لحد ما يسجل المستخدم دخول */
+    }
   </style>
 </head>
 <body>
-  <h2>احسب القيمة هنا</h2>
+  <h2>تسجيل دخول الموظفين</h2>
+  <input type="email" id="email" placeholder="البريد"><br>
+  <input type="password" id="password" placeholder="كلمة السر"><br>
+  <button onclick="login()">دخول</button>
+  <p id="status"></p>
 
-  <div>
-    <button onclick="setFactor(0.8,'Main dish')">Main dish </button>
-    <button onclick="setFactor(0.5,'Side dish')">Side dish </button>
-    <button onclick="setFactor(0.3,'Drink')">Drink </button>
-    <button onclick="setFactor(0.1,'Cutlery')">Cutlery </button>
+  <!-- الحاسبة -->
+  <div id="calculator">
+    <h2>احسب القيمة هنا</h2>
+    <div>
+      <button onclick="setFactor(0.8,'Main dish')">Main dish</button>
+      <button onclick="setFactor(0.5,'Side dish')">Side dish</button>
+      <button onclick="setFactor(0.3,'Drink')">Drink</button>
+      <button onclick="setFactor(0.1,'Cutlery')">Cutlery</button>
+    </div>
+    <br>
+    <input type="text" id="number" placeholder="سعر الصنف او الوجبة" oninput="calculate()">
+    <div id="result">اختر نوع الوجبة وسعرها</div>
+    <button onclick="logout()">🚪 تسجيل خروج</button>
+    <div class="footer">
+      Made by : Abdelrahman & Reem
+    </div>
   </div>
 
-  <br>
-  <input type="text" id="number" placeholder="سعر الصنف او الوجبة" oninput="calculate()">
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
-  <div id="result"> اختر نوع الوجبة وسعرها</div>
-  <div class="footer">
-    Made by : Abdelrahman & Reem
-  </div>
+    // 🔹 بيانات مشروعك من Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3AwdpoLUNCyGYxJ6W_KVikLIbeiBDdgk",
+      authDomain: "cs-test-8f427.firebaseapp.com",
+      projectId: "cs-test-8f427",
+      storageBucket: "cs-test-8f427.firebasestorage.app",
+      messagingSenderId: "887748977093",
+      appId: "1:887748977093:web:1ff113280f7335dbb32bac",
+      measurementId: "G-2MJGMW9GHG"
+    };
 
-  <script>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // التحقق من حالة تسجيل الدخول
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.querySelector("h2").innerText = "✅ مرحبًا " + user.email;
+        document.getElementById("calculator").style.display = "block";
+      } else {
+        document.getElementById("calculator").style.display = "none";
+      }
+    });
+
+    // تسجيل الدخول
+    window.login = function() {
+      const email = document.getElementById("email").value;
+      const pass = document.getElementById("password").value;
+      signInWithEmailAndPassword(auth, email, pass)
+        .then(() => {
+          document.getElementById("status").innerText = "";
+        })
+        .catch((error) => {
+          document.getElementById("status").innerText = "❌ خطأ: " + error.message;
+        });
+    }
+
+    // تسجيل الخروج
+    window.logout = function() {
+      signOut(auth);
+    }
+
+    // كود الحاسبة
     let factor = null;
     let label = "";
 
-    function setFactor(value, text) {
+    window.setFactor = function(value, text) {
       factor = value;
       label = text;
       calculate();
     }
 
-    function calculate() {
+    window.calculate = function() {
       let input = document.getElementById("number").value;
 
       if (input.trim() === "") {
@@ -94,7 +132,7 @@
 
       let value = parseFloat(input);
       if (factor !== null) {
-        document.getElementById("result").innerText = 
+        document.getElementById("result").innerText =
           `النتيجة لـ ${label}: ${(value * factor).toFixed(2)}`;
       } else {
         document.getElementById("result").innerText = "اختر نوع الحساب أولاً";
