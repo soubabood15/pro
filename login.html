@@ -103,6 +103,24 @@
 </div>
 
 <script>
+     let loadingInterval;
+
+function startLoadingAnimation() {
+    const el = document.getElementById("loading");
+    let dots = 0;
+
+    el.style.color = "#ffd700";
+    el.textContent = "⏳ يتم التحقق من المستخدم";
+
+    loadingInterval = setInterval(() => {
+        dots = (dots + 1) % 4;
+        el.textContent = "⏳ يتم التحقق من المستخدم" + ".".repeat(dots);
+    }, 400);
+}
+
+function stopLoadingAnimation() {
+    clearInterval(loadingInterval);
+}
 // وضع ليل/نهار
 function toggleMode() {
     document.body.classList.toggle("dark");
@@ -163,24 +181,7 @@ async function login() {
         msg.textContent = "⚠ خطأ في الاتصال بالخادم";
     }
 }
-    let loadingInterval;
-
-function startLoadingAnimation() {
-    const el = document.getElementById("loading");
-    let dots = 0;
-
-    el.style.color = "#ffd700";
-    el.textContent = "⏳ يتم التحقق من المستخدم";
-
-    loadingInterval = setInterval(() => {
-        dots = (dots + 1) % 4;
-        el.textContent = "⏳ يتم التحقق من المستخدم" + ".".repeat(dots);
-    }, 400);
-}
-
-function stopLoadingAnimation() {
-    clearInterval(loadingInterval);
-}
+   
 </script>
     
 
