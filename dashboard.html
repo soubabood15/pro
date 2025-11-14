@@ -39,7 +39,7 @@ if (!localStorage.getItem("authToken")) {
     }
 
     .input, textarea {
-        width: 100%;
+        width: 95%;
         padding: 12px;
         margin-bottom: 15px;
         border: none;
@@ -91,9 +91,13 @@ if (!localStorage.getItem("authToken")) {
 </style>
 </head>
 
+<h2 id="welcome"></h2>
+
 <body class="dark">
 
 <div class="container">
+
+
 
     <button class="mode-btn" onclick="toggleMode()">تغيير الوضع (نهار / ليل)</button>
 
@@ -110,6 +114,18 @@ if (!localStorage.getItem("authToken")) {
 </div>
 
 <script>
+    function typeWriter(text, element, speed = 70) {
+    let i = 0;
+    function typing() {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(typing, speed);
+        }
+    }
+    typing();
+}
+
 // عرض رقم المستخدم تلقائي
 document.getElementById("userid").value = localStorage.getItem("userID");
 
@@ -122,9 +138,22 @@ function toggleMode() {
 
 // تحميل الوضع المحفوظ
 window.onload = () => {
+    // الوضع المحفوظ
     const saved = localStorage.getItem("mode");
     if (saved) document.body.className = saved;
+
+    // عرض رقم المستخدم
+    document.getElementById("userid").value = localStorage.getItem("userID");
+
+    // عرض الاسم بحركة كتابة
+    const name = localStorage.getItem("userName");
+    const welcome = document.getElementById("welcome");
+    const msg = "مرحباً يا " + name + " 👋";
+    typeWriter(msg, welcome);
+
+    startAutoLogoutTimer(); // ← لتشغيل الخروج التلقائي
 };
+
 
 // إرسال البيانات إلى Google Sheet
 function sendToSheet() {
@@ -148,6 +177,25 @@ function logout() {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userID");
     window.location.href = "login.html";
+}
+
+let logoutTimer;
+
+function resetTimer() {
+    clearTimeout(logoutTimer);
+    logoutTimer = setTimeout(() => {
+        alert("تم تسجيل خروجك تلقائياً بسبب عدم النشاط.");
+        logout();
+    }, 180000); // 180,000 = 3 دقائق
+}
+
+function startAutoLogoutTimer() {
+    resetTimer();
+
+    window.onmousemove = resetTimer;
+    window.onkeydown = resetTimer;
+    window.onclick = resetTimer;
+    window.onscroll = resetTimer;
 }
 </script>
 
