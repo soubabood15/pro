@@ -1,1 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>النظام الداخلي</title>
 
+<script>
+// منع الدخول بدون تسجيل
+if (!localStorage.getItem("authToken")) {
+    window.location.href = "login.html";
+}
+</script>
+
+<style>
+    body {
+        font-family: 'Cairo', sans-serif;
+        background: #1a1a1a;
+        margin: 0;
+        padding: 25px;
+        color: #fff;
+    }
+
+    .box {
+        max-width: 600px;
+        margin: auto;
+        background: rgba(255,255,255,0.07);
+        padding: 25px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+    }
+
+    .box input, .box textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 18px;
+        border: none;
+        border-radius: 10px;
+        background: #fff;
+        font-size: 16px;
+    }
+
+    textarea {
+        height: 120px;
+        resize: none;
+    }
+
+    .whatsapp {
+        width: 100%;
+        padding: 14px;
+        background: #25D366;
+        color: #fff;
+        font-size: 18px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+        box-shadow: 0 0 10px #25D366;
+    }
+
+    .whatsapp:hover {
+        transform: scale(1.05);
+    }
+
+    .logout {
+        margin-top: 20px;
+        width: 100%;
+        padding: 12px;
+        background: crimson;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>تسجيل الحالة</h2>
+
+    <input type="text" id="userid" readonly>
+
+    <input type="text" id="name" placeholder="اسم الموظف">
+
+    <input type="text" id="caseNumber" placeholder="رقم الكيس (اختياري)">
+
+    <textarea id="issue" placeholder="المشكلة بالتفصيل..."></textarea>
+
+    <button class="whatsapp" onclick="sendWhatsApp()">إرسال واتساب</button>
+
+    <button class="logout" onclick="logout()">تسجيل خروج</button>
+</div>
+
+<script>
+// عرض رقم المستخدم تلقائي
+document.getElementById("userid").value = localStorage.getItem("userID");
+
+// واتساب
+function sendWhatsApp() {
+    const msg =
+`رقم الموظف: ${localStorage.getItem("userID")}
+الاسم: ${document.getElementById("name").value}
+رقم الكيس: ${document.getElementById("caseNumber").value}
+المشكلة: ${document.getElementById("issue").value}`;
+
+    window.open(`https://wa.me/962779622690?text=${encodeURIComponent(msg)}`);
+}
+
+// تسجيل خروج
+function logout() {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userID");
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>
