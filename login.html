@@ -121,8 +121,14 @@ async function login() {
     const user = document.getElementById("user").value.trim();
     const password = document.getElementById("password").value.trim();
     const msg = document.getElementById("msg");
+    const loading = document.getElementById("loading");
+
+    msg.textContent = "";
+    loading.textContent = "";
 
     try {
+        startLoadingAnimation();  // 🔥 بدء الانميشن
+
         const response = await fetch(
             "https://script.google.com/macros/s/AKfycbwNfQEUnhpfmxHlD8Vpwz9tu1Xt2EMTsRqsQdWa1XE9OgSLfGJnpFEDIveGCv17--jE/exec",
             {
@@ -133,24 +139,50 @@ async function login() {
 
         const result = await response.json();
 
-        if (result.status === "OK") {
+        stopLoadingAnimation();  // 🔥 إيقاف الانميشن
 
-            // تخزين المعلومات
+        if (result.status === "OK") {
+            loading.style.color = "#3cff00";
+            loading.textContent = "✔ تم التحقق… يتم تسجيل الدخول";
+
             localStorage.setItem("userName", result.name);
             localStorage.setItem("userID", user);
             localStorage.setItem("authToken", "logged");
 
-            window.location.href = "dashboard.html";
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 600);
 
         } else {
+            loading.textContent = "";
             msg.textContent = "❌ رقم المستخدم أو كلمة المرور غير صحيحة";
         }
 
     } catch (err) {
+        stopLoadingAnimation();
         msg.textContent = "⚠ خطأ في الاتصال بالخادم";
     }
 }
+    let loadingInterval;
+
+function startLoadingAnimation() {
+    const el = document.getElementById("loading");
+    let dots = 0;
+
+    el.style.color = "#ffd700";
+    el.textContent = "⏳ يتم التحقق من المستخدم";
+
+    loadingInterval = setInterval(() => {
+        dots = (dots + 1) % 4;
+        el.textContent = "⏳ يتم التحقق من المستخدم" + ".".repeat(dots);
+    }, 400);
+}
+
+function stopLoadingAnimation() {
+    clearInterval(loadingInterval);
+}
 </script>
+    
 
 </body>
 </html>
