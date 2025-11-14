@@ -7,76 +7,83 @@
 
 <style>
     body {
-        font-family: 'Cairo', sans-serif;
         margin: 0;
+        font-family: 'Cairo', sans-serif;
         height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        transition: 0.3s;
+        transition: 0.4s;
     }
 
-    body.light {
-        background: #f2f2f2;
-        color: #000;
-    }
     body.dark {
-        background: #1a1a1a;
+        background: linear-gradient(135deg, #141e30, #243b55);
         color: #fff;
+    }
+    body.light {
+        background: #f7f7f7;
+        color: #000;
     }
 
     .login-box {
         width: 330px;
-        padding: 25px;
-        border-radius: 15px;
+        padding: 30px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 20px rgba(0,0,0,0.4);
         backdrop-filter: blur(10px);
-        background: rgba(255,255,255,0.07);
-        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        text-align: center;
     }
 
-    h2 { text-align: center; margin-bottom: 25px; }
+    .login-box h2 {
+        margin-bottom: 25px;
+        font-size: 26px;
+        font-weight: bold;
+    }
 
     input {
-        width: 92%;
+        width: 100%;
         padding: 12px;
         margin-bottom: 14px;
         border: none;
         border-radius: 10px;
         font-size: 16px;
+        outline: none;
     }
 
     button {
         width: 100%;
-        padding: 13px;
-        background: #2196F3;
+        padding: 12px;
+        font-size: 18px;
+        font-weight: bold;
         border: none;
         border-radius: 10px;
-        font-size: 18px;
-        color: #fff;
+        background: #00d4ff;
         cursor: pointer;
         transition: 0.2s;
     }
 
-    button:hover { transform: scale(1.03); }
-
-    .mode-btn {
-        width: 100%;
-        padding: 10px 15px;
-        border-radius: 10px;
-        background: #444;
-        color: white;
-        border: none;
-        margin-bottom: 15px;
-        cursor: pointer;
+    button:hover {
+        transform: scale(1.03);
     }
 
     #msg {
-        text-align: center;
         margin-top: 10px;
-        color: #ff7777;
+        color: #ffaaaa;
         font-size: 15px;
-        font-weight: bold;
     }
+
+    .mode-btn {
+        margin-bottom: 18px;
+        padding: 7px 14px;
+        border-radius: 8px;
+        border: none;
+        font-size: 14px;
+        background: #444;
+        color: #fff;
+        cursor: pointer;
+    }
+
 </style>
 </head>
 
@@ -84,27 +91,27 @@
 
 <div class="login-box">
 
-    <button class="mode-btn" onclick="toggleMode()">Day/Night</button>
+    <button class="mode-btn" onclick="toggleMode()">تغيير الوضع</button>
 
     <h2>تسجيل الدخول</h2>
 
-    <input type="text" id="user" placeholder=" HR ID">
-    <input type="password" id="password" placeholder=" Password">
+    <input type="text" id="user" placeholder="رقم المستخدم">
+    <input type="password" id="password" placeholder="كلمة المرور">
 
-    <button onclick="login()">Login</button>
+    <button onclick="login()">دخول</button>
 
     <p id="msg"></p>
 </div>
 
 <script>
-// زر الليل والنهار
+// الوضع الليلي/النهاري
 function toggleMode() {
     document.body.classList.toggle("dark");
     document.body.classList.toggle("light");
     localStorage.setItem("mode", document.body.className);
 }
 
-// تحميل الوضع المحفوظ
+// حفظ الوضع بعد التحديث
 window.onload = () => {
     const saved = localStorage.getItem("mode");
     if (saved) document.body.className = saved;
@@ -124,14 +131,16 @@ async function login() {
 
         if (found) {
             localStorage.setItem("authToken", "logged");
-            localStorage.setItem("userID", user);
+            localStorage.setItem("userID", found.user);
+            localStorage.setItem("userName", found.name);
 
             window.location.href = "dashboard.html";
         } else {
-            msg.textContent = "رقم المستخدم أو كلمة المرور غير صحيحة";
+            msg.textContent = "❌ رقم المستخدم أو كلمة المرور غير صحيحة";
         }
+
     } catch (err) {
-        msg.textContent = "⚠ خطأ: لم يتم العثور على ملف password.json";
+        msg.textContent = "⚠ خطأ في تحميل ملف المستخدمين";
     }
 }
 </script>
