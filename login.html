@@ -18,12 +18,12 @@
     }
 
     .login-box {
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(15px);
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(12px);
         padding: 35px;
         width: 320px;
         border-radius: 18px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        box-shadow: 0 0 25px rgba(0,0,0,0.4);
         text-align: center;
         color: #fff;
     }
@@ -31,42 +31,37 @@
     .login-box h2 {
         margin-bottom: 25px;
         font-size: 26px;
-        font-weight: 700;
     }
 
-    .input {
+    input {
         width: 100%;
         padding: 12px;
         margin-bottom: 15px;
         border: none;
         border-radius: 10px;
-        outline: none;
         font-size: 16px;
+        outline: none;
     }
 
     button {
         width: 100%;
         padding: 13px;
-        border: none;
         background: #00d4ff;
-        color: #000;
+        border: none;
+        border-radius: 10px;
         font-size: 18px;
         font-weight: 600;
-        border-radius: 10px;
         cursor: pointer;
-        transition: 0.25s ease;
+        transition: 0.2s;
     }
 
     button:hover {
-        background: #0fe;
         transform: scale(1.03);
     }
 
     #msg {
         margin-top: 10px;
         color: #ff8a8a;
-        font-size: 15px;
-        font-weight: 600;
     }
 </style>
 </head>
@@ -76,8 +71,8 @@
 <div class="login-box">
     <h2>تسجيل الدخول</h2>
 
-    <input type="text" id="user" class="input" placeholder="رقم المستخدم (4 أرقام)">
-    <input type="password" id="password" class="input" placeholder="كلمة المرور">
+    <input type="text" id="user" placeholder="رقم المستخدم (أربع أرقام)">
+    <input type="password" id="password" placeholder="كلمة المرور">
 
     <button onclick="login()">دخول</button>
     <p id="msg"></p>
@@ -93,17 +88,18 @@ async function login() {
         const res = await fetch("password.json");
         const users = await res.json();
 
-        // التحقق هل المستخدم موجود
         const found = users.find(u => u.user === user && u.password === password);
 
         if (found) {
-            localStorage.setItem("authToken", "user-logged-in");
-            window.location.href = "dashboard.html"; // الصفحة المحمية
+            localStorage.setItem("authToken", "logged");
+            localStorage.setItem("userID", user);
+
+            window.location.href = "dashboard.html";
         } else {
             msg.textContent = "رقم المستخدم أو كلمة المرور غير صحيحة";
         }
-
-    } catch (err) {
+    } 
+    catch (error) {
         msg.textContent = "خطأ في تحميل بيانات الدخول";
     }
 }
