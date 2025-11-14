@@ -64,14 +64,14 @@ if (!localStorage.getItem("authToken")) {
     }
 
     .mode-btn {
-        background: #444;
-        color: #fff;
-        padding: 10px 16px;
+        width: 100%;
+        padding: 10px 15px;
         border: none;
         border-radius: 10px;
         margin-bottom: 15px;
+        background: #444;
+        color: white;
         cursor: pointer;
-        font-size: 15px;
     }
 
     .logout {
@@ -87,8 +87,6 @@ if (!localStorage.getItem("authToken")) {
 
     @media(max-width: 500px){
         .container { padding: 15px; }
-        .input, textarea { font-size: 15px; }
-        .send-btn { font-size: 16px; }
     }
 </style>
 </head>
@@ -97,38 +95,35 @@ if (!localStorage.getItem("authToken")) {
 
 <div class="container">
 
-    <button class="mode-btn" onclick="toggleMode()">تغيير الوضع (نهار/ليل)</button>
+    <button class="mode-btn" onclick="toggleMode()">تغيير الوضع (نهار / ليل)</button>
 
     <h2>تسجيل المشكلة</h2>
 
     <input type="text" id="userid" class="input" readonly>
-
     <input type="text" id="name" class="input" placeholder="اسم الموظف">
-
     <input type="text" id="caseNumber" class="input" placeholder="رقم الكيس (اختياري)">
-
     <textarea id="issue" placeholder="المشكلة بالتفصيل..."></textarea>
 
     <button class="send-btn" onclick="sendToSheet()">إرسال</button>
 
     <button class="logout" onclick="logout()">تسجيل خروج</button>
-
 </div>
 
 <script>
-// وضع النهار/الليل
+// عرض رقم المستخدم تلقائي
+document.getElementById("userid").value = localStorage.getItem("userID");
+
+// تغيير الوضع (نهار/ليل)
 function toggleMode() {
     document.body.classList.toggle("dark");
     document.body.classList.toggle("light");
     localStorage.setItem("mode", document.body.className);
 }
 
-// حفظ الوضع بعد إعادة التحميل
+// تحميل الوضع المحفوظ
 window.onload = () => {
     const saved = localStorage.getItem("mode");
     if (saved) document.body.className = saved;
-
-    document.getElementById("userid").value = localStorage.getItem("userID");
 };
 
 // إرسال البيانات إلى Google Sheet
@@ -140,15 +135,15 @@ function sendToSheet() {
         issue: document.getElementById("issue").value
     };
 
-    fetch("YOUR_WEBHOOK_URL_HERE", {
+    fetch("https://script.google.com/macros/s/AKfycbxFYL-1X3YNNXGm5oRa-Eifyqbddrl-biEtdGl3458DexmSydUN0nmmiF3zh8IDWNX2/exec", {
         method: "POST",
         body: JSON.stringify(payload)
     })
-    .then(() => alert("✔ تم إرسال البيانات إلى الداشبورد"))
-    .catch(() => alert("❌ حدث خطأ"));
+    .then(() => alert("✔ تم إرسال البيانات بنجاح"))
+    .catch(() => alert("❌ حدث خطأ أثناء الإرسال"));
 }
 
-// تسجيل خروج
+// خروج
 function logout() {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userID");
