@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>النظام الداخلي</title>
+<title>الصفحة الداخلية</title>
 
+<!-- منع الدخول بدون تسجيل -->
 <script>
-// منع الدخول بدون تسجيل
 if (!localStorage.getItem("authToken")) {
     window.location.href = "login.html";
 }
@@ -15,51 +15,63 @@ if (!localStorage.getItem("authToken")) {
 <style>
     body {
         font-family: 'Cairo', sans-serif;
-        background: #1a1a1a;
         margin: 0;
-        padding: 25px;
+        padding: 20px;
+        transition: 0.3s;
+    }
+
+    body.light {
+        background: #f2f2f2;
+        color: #000;
+    }
+    body.dark {
+        background: #1a1a1a;
         color: #fff;
     }
 
-    .box {
+    .container {
         max-width: 600px;
         margin: auto;
-        background: rgba(255,255,255,0.07);
-        padding: 25px;
+        background: rgba(255,255,255,0.10);
+        padding: 20px;
         border-radius: 15px;
         backdrop-filter: blur(10px);
     }
 
-    .box input, .box textarea {
+    .input, textarea {
         width: 100%;
         padding: 12px;
-        margin-bottom: 18px;
+        margin-bottom: 15px;
         border: none;
         border-radius: 10px;
-        background: #fff;
         font-size: 16px;
     }
 
     textarea {
-        height: 120px;
+        height: 130px;
         resize: none;
     }
 
-    .whatsapp {
+    .send-btn {
         width: 100%;
         padding: 14px;
-        background: #25D366;
+        background: #2196F3;
         color: #fff;
-        font-size: 18px;
         border: none;
         border-radius: 10px;
+        font-size: 17px;
         cursor: pointer;
-        transition: 0.2s;
-        box-shadow: 0 0 10px #25D366;
     }
 
-    .whatsapp:hover {
-        transform: scale(1.05);
+    .mode-btn {
+        background: #444;
+        color: #fff;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        font-size: 15px;
     }
 
     .logout {
@@ -72,40 +84,68 @@ if (!localStorage.getItem("authToken")) {
         border-radius: 10px;
         cursor: pointer;
     }
+
+    @media(max-width: 500px){
+        .container { padding: 15px; }
+        .input, textarea { font-size: 15px; }
+        .send-btn { font-size: 16px; }
+    }
 </style>
 </head>
 
-<body>
+<body class="dark">
 
-<div class="box">
-    <h2>تسجيل الحالة</h2>
+<div class="container">
 
-    <input type="text" id="userid" readonly>
+    <button class="mode-btn" onclick="toggleMode()">تغيير الوضع (نهار/ليل)</button>
 
-    <input type="text" id="name" placeholder="اسم الموظف">
+    <h2>تسجيل المشكلة</h2>
 
-    <input type="text" id="caseNumber" placeholder="رقم الكيس (اختياري)">
+    <input type="text" id="userid" class="input" readonly>
+
+    <input type="text" id="name" class="input" placeholder="اسم الموظف">
+
+    <input type="text" id="caseNumber" class="input" placeholder="رقم الكيس (اختياري)">
 
     <textarea id="issue" placeholder="المشكلة بالتفصيل..."></textarea>
 
-    <button class="whatsapp" onclick="sendWhatsApp()">إرسال واتساب</button>
+    <button class="send-btn" onclick="sendToSheet()">إرسال</button>
 
     <button class="logout" onclick="logout()">تسجيل خروج</button>
+
 </div>
 
 <script>
-// عرض رقم المستخدم تلقائي
-document.getElementById("userid").value = localStorage.getItem("userID");
+// وضع النهار/الليل
+function toggleMode() {
+    document.body.classList.toggle("dark");
+    document.body.classList.toggle("light");
+    localStorage.setItem("mode", document.body.className);
+}
 
-// واتساب
-function sendWhatsApp() {
-    const msg =
-`رقم الموظف: ${localStorage.getItem("userID")}
-الاسم: ${document.getElementById("name").value}
-رقم الكيس: ${document.getElementById("caseNumber").value}
-المشكلة: ${document.getElementById("issue").value}`;
+// حفظ الوضع بعد إعادة التحميل
+window.onload = () => {
+    const saved = localStorage.getItem("mode");
+    if (saved) document.body.className = saved;
 
-    window.open(`https://wa.me/962779622690?text=${encodeURIComponent(msg)}`);
+    document.getElementById("userid").value = localStorage.getItem("userID");
+};
+
+// إرسال البيانات إلى Google Sheet
+function sendToSheet() {
+    const payload = {
+        user: document.getElementById("userid").value,
+        name: document.getElementById("name").value,
+        caseNumber: document.getElementById("caseNumber").value,
+        issue: document.getElementById("issue").value
+    };
+
+    fetch("YOUR_WEBHOOK_URL_HERE", {
+        method: "POST",
+        body: JSON.stringify(payload)
+    })
+    .then(() => alert("✔ تم إرسال البيانات إلى الداشبورد"))
+    .catch(() => alert("❌ حدث خطأ"));
 }
 
 // تسجيل خروج
