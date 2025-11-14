@@ -1,93 +1,114 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>حساب قيمة التعويض</title>
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول</title>
+
+<style>
     body {
-      font-family: Arial, sans-serif;
-      direction: rtl;
-      text-align: center;
-      margin: 40px;
+        margin: 0;
+        padding: 0;
+        font-family: 'Cairo', sans-serif;
+        background: linear-gradient(135deg, #141e30, #243b55);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
+
+    .login-box {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        padding: 35px;
+        width: 320px;
+        border-radius: 18px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        text-align: center;
+        color: #fff;
+    }
+
+    .login-box h2 {
+        margin-bottom: 25px;
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    .input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: none;
+        border-radius: 10px;
+        outline: none;
+        font-size: 16px;
+    }
+
     button {
-      padding: 10px 20px;
-      margin: 5px;
-      font-size: 16px;
-      cursor: pointer;
+        width: 100%;
+        padding: 13px;
+        border: none;
+        background: #00d4ff;
+        color: #000;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.25s ease;
     }
-    input {
-      width: 200px;
-      padding: 10px;
-      margin-top: 20px;
-      font-size: 16px;
+
+    button:hover {
+        background: #0fe;
+        transform: scale(1.03);
     }
-    #result {
-      margin-top: 20px;
-      font-weight: bold;
-      color: darkblue;
-      font-size: 20px;
+
+    #msg {
+        margin-top: 10px;
+        color: #ff8a8a;
+        font-size: 15px;
+        font-weight: 600;
     }
-    .footer {
-      margin-top: 40px;
-      font-size: 14px;
-      color: gray;
-    }
-  </style>
+</style>
 </head>
+
 <body>
-  <h2>احسب القيمة هنا</h2>
 
-  <div>
-    <button onclick="setFactor(0.8,'Main dish')">Main dish </button>
-    <button onclick="setFactor(0.5,'Side dish')">Side dish </button>
-    <button onclick="setFactor(0.3,'Drink')">Drink </button>
-    <button onclick="setFactor(0.1,'Cutlery')">Cutlery </button>
-  </div>
+<div class="login-box">
+    <h2>تسجيل الدخول</h2>
 
-  <br>
-  <input type="text" id="number" placeholder="سعر الصنف او الوجبة" oninput="calculate()">
+    <input type="email" id="email" class="input" placeholder="البريد الإلكتروني">
+    <input type="password" id="password" class="input" placeholder="كلمة المرور">
 
-  <div id="result"> اختر نوع الوجبة وسعرها</div>
-  <div class="footer">
-    Made by : Abdelrahman & Reem
-  </div>
+    <button onclick="login()">دخول</button>
+    <p id="msg"></p>
+</div>
 
-  <script>
-    let factor = null;
-    let label = "";
+<script>
+async function login() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const msg = document.getElementById("msg");
 
-    function setFactor(value, text) {
-      factor = value;
-      label = text;
-      calculate();
-    }
+    try {
+        const res = await fetch("password.json"); // ← ملف المستخدمين
+        const users = await res.json();
 
-    function calculate() {
-      let input = document.getElementById("number").value;
+        // التحقق من وجود المستخدم
+        const user = users.find(u => u.email === email && u.password === password);
 
-      if (input.trim() === "") {
-        if (factor !== null) {
-          document.getElementById("result").innerText = "⚠️ الرجاء إدخال قيمة قبل الحساب";
+        if (user) {
+            // نجاح → إنشاء توكن
+            localStorage.setItem("authToken", "user-logged-in");
+            window.location.href = "dashboard.html"; // الصفحة المحمية
         } else {
-          document.getElementById("result").innerText = "اختر نوع الحساب أولاً";
+            msg.textContent = "الإيميل أو كلمة المرور غير صحيحة";
         }
-        return;
-      }
 
-      if (isNaN(input)) {
-        document.getElementById("result").innerText = "⚠️ الرجاء إدخال أرقام فقط";
-        return;
-      }
-
-      let value = parseFloat(input);
-      if (factor !== null) {
-        document.getElementById("result").innerText = 
-          `النتيجة لـ ${label}: ${(value * factor).toFixed(2)}`;
-      } else {
-        document.getElementById("result").innerText = "اختر نوع الحساب أولاً";
-      }
+    } catch (error) {
+        msg.textContent = "خطأ في تحميل بيانات المستخدمين";
     }
-  </script>
+}
+</script>
+
 </body>
 </html>
