@@ -124,7 +124,7 @@ async function login() {
     const msg = document.getElementById("msg");
 
     try {
-        const res = await fetch("password.json");
+        const res = await fetch("password.json?v=" + Date.now());
         const users = await res.json();
 
         const found = users.find(u => u.user === user && u.password === password);
