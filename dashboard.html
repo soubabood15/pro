@@ -159,16 +159,32 @@ function loadLeaderMessageRealtime() {
     const name = localStorage.getItem("userName");
     const span = document.getElementById("leaderMsg");
 
-    db.ref("leaderMessages/" + name).on("value", snap => {
-        const data = snap.val();
+    if (!name) {
+        span.textContent = "لا يوجد اسم مستخدم.";
+        return;
+    }
+
+    // معالجة أي أحرف خاصة في اسم الموظف
+    const safeName = name.replace(/[.#$/\[\]]/g, "_");
+
+    // إذا كان عندك بالمشروع تحفظون الرسائل بالأسماء الأصلية بدون تعديل:
+    // فايربيس يقبل name نفسه، لذلك نستخدم:
+    const refPath = "leaderMessages/" + name;
+
+    // ربط التحديثات بشكل لحظي
+    db.ref(refPath).on("value", snapshot => {
+        const data = snapshot.val();
+
         if (data && data.message) {
             span.textContent = data.message;
         } else {
             span.textContent = "لا توجد رسالة حالياً.";
         }
+    }, error => {
+        console.error("Firebase Error:", error);
+        span.textContent = "خطأ في تحميل الرسالة.";
     });
 }
-
 
 // إرسال البيانات إلى Google Sheet
 function sendToSheet() {
