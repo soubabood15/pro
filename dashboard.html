@@ -85,19 +85,29 @@ if (!localStorage.getItem("authToken")) {
         cursor: pointer;
     }
 
+    #leaderMsgBox {
+      background:#ffffff15;
+      padding:15px;
+      border-radius:10px;
+      margin-bottom:20px;
+      font-size:17px;
+    }
+
     @media(max-width: 500px){
         .container { padding: 15px; }
     }
 </style>
 </head>
 
-<h2 id="welcome"></h2>
-
 <body class="dark">
+
+<h2 id="welcome"></h2>
 
 <div class="container">
 
-
+    <div id="leaderMsgBox">
+        📩 <span id="leaderMsg">جاري تحميل رسالة التيم ليدر...</span>
+    </div>
 
     <button class="mode-btn" onclick="toggleMode()">تغيير الوضع (نهار / ليل)</button>
 
@@ -114,8 +124,26 @@ if (!localStorage.getItem("authToken")) {
     <button class="logout" onclick="logout()">تسجيل خروج</button>
 </div>
 
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
 <script>
-    function typeWriter(text, element, speed = 70) {
+// ضع نفس firebaseConfig في leader.html بالضبط
+const firebaseConfig = {
+  apiKey: "AIzaSyCmLgutb7UDoClccCwBgXcM7Ua12Wjzwic",
+  authDomain: "haztl-148bb.firebaseapp.com",
+  databaseURL: "https://haztl-148bb-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "haztl-148bb",
+  storageBucket: "haztl-148bb.firebasestorage.app",
+  messagingSenderId: "1071555434114",
+  appId: "1:1071555434114:web:a8aca47afe340e3bad469b"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function typeWriter(text, element, speed = 70) {
     let i = 0;
     function typing() {
         if (i < text.length) {
@@ -127,40 +155,29 @@ if (!localStorage.getItem("authToken")) {
     typing();
 }
 
-// عرض رقم المستخدم تلقائي
-document.getElementById("userid").value = localStorage.getItem("userID");
-
-// تغيير الوضع (نهار/ليل)
-function toggleMode() {
-    document.body.classList.toggle("dark");
-    document.body.classList.toggle("light");
-    localStorage.setItem("mode", document.body.className);
-}
-
-// تحميل الوضع المحفوظ
-window.onload = () => {
-    // الوضع المحفوظ
-    const saved = localStorage.getItem("mode");
-    if (saved) document.body.className = saved;
-
-    // عرض رقم المستخدم
-    document.getElementById("userid").value = localStorage.getItem("userID");
-
-    // عرض الاسم بحركة كتابة
+function loadLeaderMessage() {
     const name = localStorage.getItem("userName");
-    const welcome = document.getElementById("welcome");
-    const msg = "مرحباً يا " + name + " 👋";
-    typeWriter(msg, welcome);
+    const span = document.getElementById("leaderMsg");
 
-    startAutoLogoutTimer(); // ← لتشغيل الخروج التلقائي
-};
+    if (!name) {
+      span.textContent = "لا يوجد اسم مستخدم.";
+      return;
+    }
 
+    db.ref("leaderMessages/" + name).once("value", snap => {
+        const data = snap.val();
+        if (data && data.message) {
+            span.textContent = data.message;
+        } else {
+            span.textContent = "لا توجد رسالة حالياً.";
+        }
+    });
+}
 
 // إرسال البيانات إلى Google Sheet
 function sendToSheet() {
     const status = document.getElementById("sendStatus");
 
-    // أول ظهور = جاري الإرسال
     status.style.color = "#ffd700";
     status.textContent = "⏳ يتم الإرسال الآن...";
 
@@ -171,7 +188,7 @@ function sendToSheet() {
         issue: document.getElementById("issue").value
     };
 
-    fetch("https://script.google.com/macros/s/AKfycbxFYL-1X3YNNXGm5oRa-Eifyqbddrl-biEtdGl3458DexmSydUN0nmmiF3zh8IDWNX2/exec", {
+    fetch("YOUR_GOOGLE_SCRIPT_URL_HERE", {
         method: "POST",
         body: JSON.stringify(payload)
     })
@@ -185,31 +202,31 @@ function sendToSheet() {
     });
 }
 
-// خروج
+function toggleMode() {
+    document.body.classList.toggle("dark");
+    document.body.classList.toggle("light");
+    localStorage.setItem("mode", document.body.className);
+}
+
 function logout() {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userID");
+    localStorage.removeItem("userName");
     window.location.href = "login.html";
 }
 
-let logoutTimer;
+window.onload = () => {
+    const saved = localStorage.getItem("mode");
+    if (saved) document.body.className = saved;
 
-function resetTimer() {
-    clearTimeout(logoutTimer);
-    logoutTimer = setTimeout(() => {
-        alert("تم تسجيل خروجك تلقائياً بسبب عدم النشاط.");
-        logout();
-    }, 180000); // 180,000 = 3 دقائق
-}
+    document.getElementById("userid").value = localStorage.getItem("userID") || "";
 
-function startAutoLogoutTimer() {
-    resetTimer();
+    const name = localStorage.getItem("userName") || "مستخدم";
+    const welcome = document.getElementById("welcome");
+    typeWriter("مرحباً يا " + name + " 👋", welcome);
 
-    window.onmousemove = resetTimer;
-    window.onkeydown = resetTimer;
-    window.onclick = resetTimer;
-    window.onscroll = resetTimer;
-}
+    loadLeaderMessage();
+};
 </script>
 
 </body>
