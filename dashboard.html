@@ -92,10 +92,6 @@ if (!localStorage.getItem("authToken")) {
       margin-bottom:20px;
       font-size:17px;
     }
-
-    @media(max-width: 500px){
-        .container { padding: 15px; }
-    }
 </style>
 </head>
 
@@ -118,18 +114,18 @@ if (!localStorage.getItem("authToken")) {
     <input type="text" id="caseNumber" class="input" placeholder="رقم الكيس (اختياري)">
     <textarea id="issue" placeholder="المشكلة بالتفصيل..."></textarea>
 
-    <button class="send-btn" onclick="sendToSheet()">إرسال</button>
+    <button class="send-btn" onclick="sendToFirebase()">إرسال</button>
     <p id="sendStatus" style="margin-top:10px; font-weight:bold;"></p>
 
     <button class="logout" onclick="logout()">تسجيل خروج</button>
 </div>
 
-<!-- Firebase CDN -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
 <script>
-// ضع نفس firebaseConfig في leader.html بالضبط
+// ⚠️ نفس الكونفيق تبع صفحة التيم ليدر
 const firebaseConfig = {
   apiKey: "AIzaSyCmLgutb7UDoClccCwBgXcM7Ua12Wjzwic",
   authDomain: "haztl-148bb.firebaseapp.com",
@@ -143,6 +139,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// حركة الكتابة
 function typeWriter(text, element, speed = 70) {
     let i = 0;
     function typing() {
@@ -155,7 +152,8 @@ function typeWriter(text, element, speed = 70) {
     typing();
 }
 
-function loadLeaderMessageRealtime() {
+// تحميل رسالة التيم ليدر
+function loadLeaderMessage() {
     const name = localStorage.getItem("userName");
     const span = document.getElementById("leaderMsg");
 
@@ -164,51 +162,42 @@ function loadLeaderMessageRealtime() {
         return;
     }
 
-    // معالجة أي أحرف خاصة في اسم الموظف
-    const safeName = name.replace(/[.#$/\[\]]/g, "_");
+    const ref = db.ref("leaderMessages/" + name);
 
-    // إذا كان عندك بالمشروع تحفظون الرسائل بالأسماء الأصلية بدون تعديل:
-    // فايربيس يقبل name نفسه، لذلك نستخدم:
-    const refPath = "leaderMessages/" + name;
+    ref.off(); // ← مهم جداً: يلغي أي listeners قديمة
 
-    // ربط التحديثات بشكل لحظي
-    db.ref(refPath).on("value", snapshot => {
+    ref.on("value", snapshot => {
         const data = snapshot.val();
-
         if (data && data.message) {
             span.textContent = data.message;
         } else {
             span.textContent = "لا توجد رسالة حالياً.";
         }
-    }, error => {
-        console.error("Firebase Error:", error);
-        span.textContent = "خطأ في تحميل الرسالة.";
     });
 }
 
-// إرسال البيانات إلى Google Sheet
-function sendToSheet() {
+
+// إرسال المشكلة إلى Firebase بدلاً من Google Sheet
+function sendToFirebase() {
     const status = document.getElementById("sendStatus");
 
     status.style.color = "#ffd700";
     status.textContent = "⏳ يتم الإرسال الآن...";
 
-    const payload = {
+    const entry = {
         user: document.getElementById("userid").value,
         name: document.getElementById("name").value,
         caseNumber: document.getElementById("caseNumber").value,
-        issue: document.getElementById("issue").value
+        issue: document.getElementById("issue").value,
+        time: new Date().toISOString()
     };
 
-    fetch("YOUR_GOOGLE_SCRIPT_URL_HERE", {
-        method: "POST",
-        body: JSON.stringify(payload)
-    })
-    .then(() => {
+    const id = Date.now(); // رقم فريد
+
+    db.ref("issues/" + id).set(entry).then(() => {
         status.style.color = "#3cff00";
         status.textContent = "✔ تم الإرسال بنجاح";
-    })
-    .catch(() => {
+    }).catch(() => {
         status.style.color = "red";
         status.textContent = "❌ حدث خطأ أثناء الإرسال";
     });
@@ -227,6 +216,7 @@ function logout() {
     window.location.href = "login.html";
 }
 
+
 window.onload = () => {
     const saved = localStorage.getItem("mode");
     if (saved) document.body.className = saved;
@@ -234,8 +224,7 @@ window.onload = () => {
     document.getElementById("userid").value = localStorage.getItem("userID") || "";
 
     const name = localStorage.getItem("userName") || "مستخدم";
-    const welcome = document.getElementById("welcome");
-    typeWriter("مرحباً يا " + name + " 👋", welcome);
+    typeWriter("مرحباً يا " + name + " 👋", document.getElementById("welcome"));
 
     loadLeaderMessage();
 };
