@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التيم ليدر</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  background: #111;
+  color: #fff;
+  padding: 15px;
+}
+.box {
+  background: #222;
+  padding: 15px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+}
+textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  margin-top: 6px;
+  height: 80px;
+}
+button {
+  margin-top: 8px;
+  width: 100%;
+  padding: 10px;
+  background: #2196F3;
+  border: none;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#status {
+  margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<h2>📋 رسائل الموظفين</h2>
+
+<div id="status"></div>
+<div id="list">جاري تحميل الموظفين...</div>
+
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+<script>
+// ←← ضعي هنا الـ firebaseConfig تبعك بالضبط
+const firebaseConfig = {
+  apiKey: "AIzaSyCmLgutb7UDoClccCwBgXcM7Ua12Wjzwic",
+  authDomain: "haztl-148bb.firebaseapp.com",
+  databaseURL: "https://haztl-148bb-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "haztl-148bb",
+  storageBucket: "haztl-148bb.firebasestorage.app",
+  messagingSenderId: "1071555434114",
+  appId: "1:1071555434114:web:a8aca47afe340e3bad469b"
+};
+
+// تشغيل Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// قائمة الموظفين (ثابتة – تشتغل فوراً)
+const employees = [
+  "Sadel Wa'El",
+  "Sadeel Yousef",
+  "Ammar Nasir",
+  "Qais Jalal",
+  "Tha'er Marwan",
+  "SaifAldeen Omar",
+  "Sanad Amer",
+  "Amr Ghazi",
+  "Mohammad Hosamedeen",
+  "Sara Mustafa",
+  "Farah Raed",
+  "Ibraheem Majed",
+  "Abdelrahman Ali",
+  "Adam Emad"
+];
+
+function sanitize(name) {
+  return name.replace(/[.#$/\[\]]/g, "_");
+}
+
+function loadMessages() {
+  const list = document.getElementById("list");
+  list.textContent = "جاري التحميل...";
+
+  db.ref("leaderMessages").once("value", snap => {
+    const data = snap.val() || {};
+    list.innerHTML = "";
+
+    employees.forEach(emp => {
+      const msg = data[emp]?.message || "";
+
+      list.innerHTML += `
+        <div class="box">
+          <b>${emp}</b><br><br>
+          <textarea id="${sanitize(emp)}">${msg}</textarea>
+          <button onclick="save('${emp}')">حفظ الرسالة</button>
+        </div>
+      `;
+    });
+  });
+}
+
+function save(name) {
+  const id = sanitize(name);
+  const text = document.getElementById(id).value;
+
+  db.ref("leaderMessages/" + name).set({
+    message: text,
+    updatedAt: new Date().toISOString()
+  }).then(() => {
+    const st = document.getElementById("status");
+    st.style.color = "#0f0";
+    st.textContent = "✔ تم حفظ الرسالة";
+    setTimeout(() => st.textContent = "", 2000);
+  });
+}
+
+loadMessages();
+</script>
+
+</body>
+</html>
