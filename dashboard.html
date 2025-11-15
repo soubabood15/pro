@@ -155,16 +155,11 @@ function typeWriter(text, element, speed = 70) {
     typing();
 }
 
-function loadLeaderMessage() {
+function loadLeaderMessageRealtime() {
     const name = localStorage.getItem("userName");
     const span = document.getElementById("leaderMsg");
 
-    if (!name) {
-      span.textContent = "لا يوجد اسم مستخدم.";
-      return;
-    }
-
-    db.ref("leaderMessages/" + name).once("value", snap => {
+    db.ref("leaderMessages/" + name).on("value", snap => {
         const data = snap.val();
         if (data && data.message) {
             span.textContent = data.message;
@@ -173,6 +168,7 @@ function loadLeaderMessage() {
         }
     });
 }
+
 
 // إرسال البيانات إلى Google Sheet
 function sendToSheet() {
